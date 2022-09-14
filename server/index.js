@@ -15,12 +15,26 @@ const api = axios.create({
     Authorization: process.env.AUTH,
   }
 })
+
+const newApi = axios.create({
+})
 //Middleware
 app.use(morgan('dev'));
 app.use(expressStaticGzip(path.join(__dirname, '../dist')));
 app.use(compression());
 
 const port = process.env.PORT || 8080;
+
+app.get('/api/products/*', (req, res) => {
+  const url = 'http://127.0.0.1:8080' + req.url.replace('/api/', '/')
+  console.log(url);
+  newApi.get(url)
+    .then(response => {
+      res.status(200);
+      res.send(response.data);
+    })
+    .catch(err => console.log(err))
+})
 
 app.get('/api/*', (req, res) => {
   const url = req.url.replace('/api/', '/')
